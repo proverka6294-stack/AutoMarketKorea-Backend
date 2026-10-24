@@ -1,0 +1,76 @@
+{
+  "_comment": "ТЕСТОВЫЕ ДАННЫЕ. Выдуманные записи для проверки импорта, а не реальные объявления. Последняя запись намеренно некорректна (год 1800): так проверяется отсев ошибок.",
+  "items": [
+    {
+      "external_id": "TEST-1001",
+      "title": "[ТЕСТ] Hyundai Sonata 2020",
+      "brand": "Hyundai",
+      "model": "Sonata",
+      "trim": "2.0 Premium",
+      "year": 2020,
+      "price_krw": 18500000,
+      "mileage_km": 45000,
+      "fuel_type": "gasoline",
+      "transmission": "automatic",
+      "color": "White",
+      "region": "Seoul",
+      "listing_url": "https://example.com/listing/TEST-1001",
+      "photos": [
+        "https://example.com/photos/TEST-1001-1.jpg",
+        "https://example.com/photos/TEST-1001-2.jpg"
+      ],
+      "status": "active",
+      "description": "Тестовая запись, не реальное объявление."
+    },
+    {
+      "external_id": "TEST-1002",
+      "title": "[ТЕСТ] Kia K5 2021",
+      "brand": "Kia",
+      "model": "K5",
+      "year": 2021,
+      "price_krw": 22000000,
+      "mileage_km": 30000,
+      "fuel_type": "lpg",
+      "transmission": "automatic",
+      "region": "Busan",
+      "photos": ["https://example.com/photos/TEST-1002-1.jpg"],
+      "status": "active",
+      "description": "Тестовая запись, не реальное объявление."
+    },
+    {
+      "external_id": "TEST-1003",
+      "title": "[ТЕСТ] Genesis G80 2019",
+      "brand": "Genesis",
+      "model": "G80",
+      "year": 2019,
+      "price_krw": 35000000,
+      "mileage_km": 80000,
+      "fuel_type": "diesel",
+      "transmission": "automatic",
+      "region": "Incheon",
+      "status": "sold",
+      "description": "Тестовая запись, не реальное объявление."
+    },
+    {
+      "external_id": "TEST-1004",
+      "title": "[ТЕСТ] Hyundai Ioniq 5 2022",
+      "brand": "Hyundai",
+      "model": "Ioniq 5",
+      "year": 2022,
+      "price_krw": 41000000,
+      "mileage_km": 12000,
+      "fuel_type": "전기",
+      "transmission": "오토",
+      "region": "Suwon",
+      "photos": ["https://example.com/photos/TEST-1004-1.jpg"],
+      "status": "active",
+      "description": "Тестовая запись, не реальное объявление."
+    },
+    {
+      "external_id": "TEST-BAD",
+      "brand": "Test",
+      "model": "Broken",
+      "year": 1800
+    }
+  ]
+}
