@@ -33,7 +33,7 @@ def get_filters(
     brand: str | None = Query(default=None, max_length=80),
     model: str | None = Query(default=None, max_length=80),
     fuel_type: FuelType | None = Query(default=None),
-    transmission: Transmission | None = Query(default=None),
+    transmission: Transmission | Query(default=None),
     status: StatusFilter = Query(default=StatusFilter.ACTIVE),
     source: str | None = Query(default=None, max_length=50),
     year_min: int | None = Query(default=None, ge=1980, le=2100),
@@ -71,7 +71,8 @@ async def live_search(request: Request, q: str = Query(..., min_length=2), db: S
 
     url = "https://api.carapis.com/apix/api/vehicles/"
     headers = {"Authorization": f"Bearer {settings.carapis_api_key}"}
-    params = {"q": q, "page": 1, "page_size": 20, "source": "encar"}
+    # Увеличили page_size до 50, чтобы сразу скачивалось больше машин
+    params = {"q": q, "page": 1, "page_size": 50, "source": "encar"}
 
     async with httpx.AsyncClient(timeout=20.0, follow_redirects=True) as client:
         res = await client.get(url, headers=headers, params=params)
