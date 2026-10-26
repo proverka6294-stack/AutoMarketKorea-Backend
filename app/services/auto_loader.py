@@ -107,7 +107,6 @@ class AutoLoader:
             await asyncio.sleep(1)
 
     async def _fetch_batch(self, page, page_size):
-        # ИСПРАВЛЕННЫЙ АДРЕС И FOLLOW_REDIRECTS=True
         url = "https://api.carapis.com/apix/api/vehicles/"
         headers = {"Authorization": f"Bearer {self.settings.carapis_api_key}"}
         params = {"page": page, "page_size": page_size, "source": "encar"}
@@ -120,9 +119,15 @@ class AutoLoader:
         items = data.get("results") or data.get("data") or []
         records = []
         for car in items:
-            # Извлекаем ВСЕ фотографии из массива photos
             photos = [p["url"] for p in car.get("photos", []) if p.get("url")]
             
+            # Формируем понятное описание для пользователя
+            desc = f"Автомобиль {car.get('year')} года. Пробег: {car.get('mileage')} км. "
+            desc += f"Регион продажи: {car.get('region')}. "
+            desc += f"Тип продавца: {'Дилер' if car.get('seller_type') == 'dealer' else 'Частное лицо'}. "
+            desc += f"Цвет: {car.get('color')}. "
+            desc += "Полные характеристики и история автомобиля доступны по ссылке на оригинальное объявление."
+
             records.append({
                 "external_id": str(car.get("id")),
                 "brand": car.get("brand_name") or "Unknown",
@@ -137,5 +142,6 @@ class AutoLoader:
                 "listing_url": car.get("url"),
                 "photos": photos,
                 "status": "active",
+                "description": desc
             })
         return records
