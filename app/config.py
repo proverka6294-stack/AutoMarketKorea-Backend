@@ -1,4 +1,4 @@
-"""Настройки приложения. Значения берутся из переменных окружения и файла .env."""
+﻿"""РќР°СЃС‚СЂРѕР№РєРё РїСЂРёР»РѕР¶РµРЅРёСЏ. Р—РЅР°С‡РµРЅРёСЏ Р±РµСЂСѓС‚СЃСЏ РёР· РїРµСЂРµРјРµРЅРЅС‹С… РѕРєСЂСѓР¶РµРЅРёСЏ Рё С„Р°Р№Р»Р° .env."""
 from functools import lru_cache
 
 from pydantic import Field, field_validator
@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     licensed_feed_auth_header: str = "Authorization"
     licensed_feed_auth_scheme: str = "Bearer"
 
+    carapis_api_key: str = ""
+    auto_load_target: int = 100
+    auto_load_interval: int = 600
+    auto_load_batch_size: int = 20
+
     http_timeout_seconds: float = Field(default=15.0, gt=0, le=120)
     http_max_attempts: int = Field(default=4, ge=1, le=10)
     http_backoff_seconds: float = Field(default=1.0, ge=0, le=60)
@@ -41,7 +46,7 @@ class Settings(BaseSettings):
 
     @property
     def sqlalchemy_url(self) -> str:
-        """Приводит адреса вида postgres:// к формату SQLAlchemy + psycopg 3."""
+        """РџСЂРёРІРѕРґРёС‚ Р°РґСЂРµСЃР° РІРёРґР° postgres:// Рє С„РѕСЂРјР°С‚Сѓ SQLAlchemy + psycopg 3."""
         url = self.database_url.strip()
         if url.startswith("postgres://"):
             return "postgresql+psycopg://" + url[len("postgres://"):]

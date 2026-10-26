@@ -1,4 +1,4 @@
-"""Сборка приложения. Вынесена в функцию, чтобы тесты могли подставлять свои настройки и базу."""
+﻿"""РЎР±РѕСЂРєР° РїСЂРёР»РѕР¶РµРЅРёСЏ. Р’С‹РЅРµСЃРµРЅР° РІ С„СѓРЅРєС†РёСЋ, С‡С‚РѕР±С‹ С‚РµСЃС‚С‹ РјРѕРіР»Рё РїРѕРґСЃС‚Р°РІР»СЏС‚СЊ СЃРІРѕРё РЅР°СЃС‚СЂРѕР№РєРё Рё Р±Р°Р·Сѓ."""
 import logging
 from contextlib import asynccontextmanager
 
@@ -8,13 +8,14 @@ from fastapi.responses import JSONResponse
 from sqlalchemy.engine import Engine
 
 from app import __version__
-from app import models  # noqa: F401  (регистрирует таблицы)
+from app import models  # noqa: F401  (СЂРµРіРёСЃС‚СЂРёСЂСѓРµС‚ С‚Р°Р±Р»РёС†С‹)
 from app.api import admin, cars, health, sources
 from app.config import Settings, get_settings
 from app.database import Base, make_engine, make_session_factory
 from app.importers.registry import build_importers
 from app.importers.runner import sync_sources
 from app.logging_config import setup_logging
+from app.services.auto_loader import AutoLoader
 
 logger = logging.getLogger(__name__)
 
@@ -34,13 +35,16 @@ def create_app(
 
     @asynccontextmanager
     async def lifespan(_app: FastAPI):
+        auto_loader = AutoLoader(settings, session_factory)
+        await auto_loader.start()
         Base.metadata.create_all(engine)
         with session_factory() as db:
             sync_sources(db, importers)
-        logger.info("Сервер запущен: %s v%s", settings.app_name, __version__)
+        logger.info("РЎРµСЂРІРµСЂ Р·Р°РїСѓС‰РµРЅ: %s v%s", settings.app_name, __version__)
         yield
+        await auto_loader.stop()
         engine.dispose()
-        logger.info("Сервер остановлен")
+        logger.info("РЎРµСЂРІРµСЂ РѕСЃС‚Р°РЅРѕРІР»РµРЅ")
 
     app = FastAPI(title=settings.app_name, version=__version__, lifespan=lifespan)
     app.state.settings = settings
@@ -59,9 +63,9 @@ def create_app(
     @app.exception_handler(Exception)
     async def unhandled_error(request: Request, exc: Exception) -> JSONResponse:
         logger.error(
-            "Необработанная ошибка: %s %s", request.method, request.url.path, exc_info=exc
+            "РќРµРѕР±СЂР°Р±РѕС‚Р°РЅРЅР°СЏ РѕС€РёР±РєР°: %s %s", request.method, request.url.path, exc_info=exc
         )
-        return JSONResponse(status_code=500, content={"detail": "Внутренняя ошибка сервера."})
+        return JSONResponse(status_code=500, content={"detail": "Р’РЅСѓС‚СЂРµРЅРЅСЏСЏ РѕС€РёР±РєР° СЃРµСЂРІРµСЂР°."})
 
     @app.get("/", include_in_schema=False)
     def root() -> dict:
