@@ -107,11 +107,12 @@ class AutoLoader:
             await asyncio.sleep(1)
 
     async def _fetch_batch(self, page, page_size):
-        url = "https://api.carapis.com/apix/catalog_api/vehicles/"
+        # ИСПРАВЛЕННЫЙ АДРЕС И FOLLOW_REDIRECTS=True
+        url = "https://api.carapis.com/apix/api/vehicles/"
         headers = {"Authorization": f"Bearer {self.settings.carapis_api_key}"}
         params = {"page": page, "page_size": page_size, "source": "encar"}
 
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=30.0, follow_redirects=True) as client:
             response = await client.get(url, headers=headers, params=params)
             response.raise_for_status()
             data = response.json()
@@ -119,7 +120,9 @@ class AutoLoader:
         items = data.get("results") or data.get("data") or []
         records = []
         for car in items:
+            # Извлекаем ВСЕ фотографии из массива photos
             photos = [p["url"] for p in car.get("photos", []) if p.get("url")]
+            
             records.append({
                 "external_id": str(car.get("id")),
                 "brand": car.get("brand_name") or "Unknown",
